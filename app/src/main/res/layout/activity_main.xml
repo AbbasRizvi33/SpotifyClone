@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/main"
+        android:background="@color/background"
         >
 
         <androidx.viewpager2.widget.ViewPager2
@@ -38,7 +39,7 @@
             app:itemTextColor="@color/white"
             app:itemIconTint="@color/white"
             app:itemActiveIndicatorStyle="@null"
-
+            style="@style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface"
             />
 
 
