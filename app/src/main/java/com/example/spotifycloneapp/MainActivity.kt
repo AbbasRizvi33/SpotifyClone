@@ -3,6 +3,7 @@ package com.example.spotifycloneapp
 import android.os.Bundle
 import android.view.View
 import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.animation.OvershootInterpolator
 import android.view.animation.ScaleAnimation
 import androidx.activity.enableEdgeToEdge
@@ -54,18 +55,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun View.bounceAnimation() {
-        val anim = ScaleAnimation(
-            0.8f, 1f,
-            0.8f, 1f,
-            Animation.RELATIVE_TO_SELF, 0.5f,
-            Animation.RELATIVE_TO_SELF, 0.5f
-        )
-        anim.duration = 150
-        anim.fillAfter = true
-        anim.interpolator = OvershootInterpolator()
-        startAnimation(anim)
-    }
 
 
     fun setupBtmNavFragSync(){
@@ -73,7 +62,9 @@ class MainActivity : AppCompatActivity() {
             viewModel.navItemSelected(item.itemId)
 
             val iconView = binding.btmnav.findViewById<View>(item.itemId)
-            iconView?.bounceAnimation()
+            val anim= AnimationUtils.loadAnimation(this@MainActivity,R.anim.small_bounce)
+//            iconView?.animation=anim
+            iconView.startAnimation(anim)
 
             true
         }
