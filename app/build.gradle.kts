@@ -46,7 +46,7 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+//    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
@@ -78,4 +78,6 @@ dependencies {
     implementation("androidx.room:room-runtime:2.8.1")
     kapt("androidx.room:room-compiler:2.8.1")
     implementation("androidx.room:room-ktx:2.8.1")
+
+    implementation("com.google.android.material:material:1.13.0-alpha12")
 }

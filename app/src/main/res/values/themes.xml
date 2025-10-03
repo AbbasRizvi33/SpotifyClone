@@ -5,5 +5,49 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
+    <style name="SearchBar_Rounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
     <style name="Theme.SpotifyCloneApp" parent="Base.Theme.SpotifyCloneApp" />
+    <!-- res/values/colors.xml -->
+
+    <style name="SearchBarSpotify" parent="Widget.Material3.SearchBar">
+        <!-- Rounded corners -->
+        <item name="shapeAppearanceOverlay">@style/SearchBar_Rounded</item>
+
+        <!-- Semi-transparent white background -->
+        <item name="backgroundTint">@color/spotify_search_bg</item>
+
+        <!-- Text colors -->
+        <item name="titleTextColor">@color/spotify_text</item>
+        <item name="hintTextColor">@color/spotify_text</item>
+
+        <!-- Optional: remove shadow/elevation if you want flat look -->
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="SpotifyChip" parent="Widget.Material3.Chip.Assist">
+        <!-- Background semi-transparent white -->
+        <item name="chipBackgroundColor">@color/spotify_chip_bg</item>
+
+        <!-- Text color -->
+        <item name="android:textColor">@color/spotify_chip_text</item>
+
+        <!-- Rounded edges -->
+        <item name="shapeAppearanceOverlay">@style/Chip_Rounded</item>
+
+        <!-- Remove elevation/shadow for flat look -->
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="Chip_Rounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item> <!-- full pill -->
+    </style>
+
+
+
+
 </resources>
