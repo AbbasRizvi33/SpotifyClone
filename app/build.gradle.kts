@@ -65,10 +65,12 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.57.2")
     kapt("com.google.dagger:hilt-android-compiler:2.57.2")
 
-    // ExoPlayer
-    implementation("androidx.media3:media3-exoplayer:1.8.0")
-    implementation("androidx.media3:media3-ui:1.8.0")
-    implementation("androidx.media3:media3-session:1.8.0")
+//    // ExoPlayer
+//    implementation("androidx.media3:media3-exoplayer:1.8.0")
+//    implementation("androidx.media3:media3-ui:1.8.0")
+//    implementation("androidx.media3:media3-session:1.8.0")
+    implementation("androidx.media:media:1.7.0")
+    implementation("com.google.android.exoplayer:exoplayer:2.18.7")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
@@ -80,4 +82,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.8.1")
 
     implementation("com.google.android.material:material:1.13.0-alpha12")
+
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")
+
+
 }

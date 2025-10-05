@@ -27,7 +27,7 @@
 
         <com.google.android.material.search.SearchBar
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:hint="@string/find_in_liked_songs"
             app:layout_constraintStart_toStartOf="@id/v1"
             app:layout_constraintEnd_toStartOf="@id/sort"
@@ -36,18 +36,19 @@
             app:titleTextColor="@color/background2"
             android:id="@+id/searchbar"
             style="@style/SearchBarSpotify"
+            app:layout_constraintHorizontal_weight="8"
             />
 
         <com.google.android.material.chip.Chip
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/searchbar"
             app:layout_constraintEnd_toEndOf="@id/v2"
             android:id="@+id/sort"
             app:layout_constraintTop_toTopOf="@id/searchbar"
             app:layout_constraintBottom_toBottomOf="@id/searchbar"
-            android:text="Sort"
-            style="@style/SpotifyChip"/>
+            android:text="@string/sort"
+            app:layout_constraintHorizontal_weight="2" />
 
 
         <com.google.android.material.search.SearchView
@@ -79,7 +80,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/v1"
             app:layout_constraintTop_toBottomOf="@id/h1"
-            android:text="Liked Songs"
+            android:text="@string/liked_songs"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -91,7 +92,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/likedsongsview"
             app:layout_constraintTop_toBottomOf="@id/likedsongsview"
-            android:text="778"
+            android:text="@string/_778"
             android:layout_marginTop="6dp"
             android:id="@+id/likedsongscount"
             />
@@ -101,7 +102,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/likedsongscount"
             app:layout_constraintTop_toTopOf="@id/likedsongscount"
-            android:text="songs"
+            android:text="@string/songs"
             android:layout_marginHorizontal="5dp"
             android:id="@+id/songstv"
             />

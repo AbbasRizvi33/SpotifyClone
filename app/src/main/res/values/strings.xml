@@ -10,4 +10,8 @@
     <string name="category">Category</string>
     <string name="what_do_you_want_to_listen_to">What do you want to listen to?</string>
     <string name="find_in_liked_songs">Find in Liked Songs</string>
+    <string name="sort">Sort</string>
+    <string name="liked_songs">Liked Songs</string>
+    <string name="_778">778</string>
+    <string name="songs">songs</string>
 </resources>
