@@ -1,14 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Fragments.NowPlaying">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        app:layoutDescription="@xml/fragment_now_playing_xml_root_layout_scene"
+        android:background="@color/background2"
+        tools:context=".Fragments.NowPlaying">
 
-</FrameLayout>
+        <View
+            android:id="@+id/mini_player_touch_anchor"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintBottom_toTopOf="@id/guideline_mini_player"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_mini_player"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="64dp" />
+
+        <ImageButton
+            android:id="@+id/ib_like_song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/fav"
+            app:tint="@color/white"
+            tools:ignore="ContentDescription" />
+
+
+        <ImageView
+            android:id="@+id/iv_album_art_mini"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@id/guideline_mini_player"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_launcher_background" />
+
+        <TextView
+            android:id="@+id/tv_track_title_mini"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tv_track_artist_mini"
+            app:layout_constraintEnd_toStartOf="@+id/ib_play_pause_mini"
+            app:layout_constraintStart_toEndOf="@+id/iv_album_art_mini"
+            app:layout_constraintTop_toTopOf="@+id/iv_album_art_mini"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Song Title" />
+
+        <TextView
+            android:id="@+id/tv_track_artist_mini"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_album_art_mini"
+            app:layout_constraintEnd_toEndOf="@+id/tv_track_title_mini"
+            app:layout_constraintStart_toStartOf="@+id/tv_track_title_mini"
+            app:layout_constraintTop_toBottomOf="@+id/tv_track_title_mini"
+            tools:text="Artist Name" />
+
+        <ImageButton
+            android:id="@+id/ib_play_pause_mini"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_pause"
+            app:layout_constraintBottom_toTopOf="@id/guideline_mini_player"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+
+
+        <ImageButton
+            android:id="@+id/ib_down_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/down"
+            app:tint="@color/white"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_track_title_full"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            android:alpha="0.0"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tv_track_artist_full"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Song Title Full" />
+
+        <TextView
+            android:id="@+id/tv_track_artist_full"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:alpha="0.0"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/seekBar"
+            app:layout_constraintEnd_toEndOf="@+id/tv_track_title_full"
+            app:layout_constraintStart_toStartOf="@+id/tv_track_title_full"
+            tools:text="Artist Name Full" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:alpha="0.0"
+            app:layout_constraintBottom_toTopOf="@id/ib_play_pause_full"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ib_play_pause_full"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:alpha="0.0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_pause"
+            app:tint="@color/white"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/ib_skip_next_full"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:alpha="0.0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_skip_next"
+            app:tint="@color/white"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/ib_skip_previous_full"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:alpha="0.0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_skip_previous"
+            app:tint="@color/white"
+            tools:ignore="ContentDescription" />
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+</layout>
