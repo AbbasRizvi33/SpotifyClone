@@ -24,11 +24,18 @@ object AppModule {
             context,
             RoomDb::class.java,
             "songs_db"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
     fun provideSongDao(db: RoomDb): SongDao = db.songDao()
+
+    @Provides
+    @Singleton
+    fun provideRepository(songDao: SongDao): Repository {
+        return Repository(songDao)
+    }
 
 
 }

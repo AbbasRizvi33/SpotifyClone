@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         askNotificationPermission()
-        createNotificationChannel()
+//        createNotificationChannel()
         init()
         listenViewModel()
 
@@ -65,20 +65,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "default_channel",
-                "Music Playback",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Channel for SpotifyClone music playback notifications"
-            }
-
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
-    }
+//    private fun createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val channel = NotificationChannel(
+//                "default_channel",
+//                "Music Playback",
+//                NotificationManager.IMPORTANCE_LOW
+//            ).apply {
+//                description = "Channel for SpotifyClone music playback notifications"
+//            }
+//
+//            val manager = getSystemService(NotificationManager::class.java)
+//            manager.createNotificationChannel(channel)
+//        }
+//    }
 
     fun listenViewModel(){
         lifecycleScope.launch {

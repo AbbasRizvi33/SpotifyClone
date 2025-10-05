@@ -26,6 +26,15 @@
             app:layout_constraintBottom_toTopOf="@id/btmnav"
             android:id="@+id/fragmentHolder"/>
 
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/nowPlayingFragment"
+            android:name="com.example.spotifycloneapp.Fragments.NowPlaying"
+            app:layout_constraintBottom_toTopOf="@id/btmnav"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:layout_width="0dp"
             android:layout_height="wrap_content"

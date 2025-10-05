@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- The Transition defines the animation from start to end -->
+    <Transition
+        app:constraintSetEnd="@+id/expanded"
+        app:constraintSetStart="@id/collapsed"
+        app:duration="300">
+
+        <!-- This listens for a swipe on the main layout to trigger the transition -->
+        <OnSwipe
+            app:dragDirection="dragUp"
+            app:touchAnchorId="@id/iv_album_art_mini"
+            app:touchAnchorSide="top" />
+
+    </Transition>
+
+    <!-- ConstraintSet for the COLLAPSED (mini-player) state -->
+    <ConstraintSet android:id="@+id/collapsed">
+        <!-- Make the full-screen controls invisible -->
+        <Constraint android:id="@+id/seekBar" android:alpha="0.0" />
+        <Constraint android:id="@+id/ib_down_arrow" android:alpha="0.0" />
+        <Constraint android:id="@+id/ib_play_pause_full" android:alpha="0.0" />
+        <Constraint android:id="@+id/ib_skip_next_full" android:alpha="0.0" />
+        <Constraint android:id="@+id/ib_skip_previous_full" android:alpha="0.0" />
+        <Constraint android:id="@+id/tv_track_title_full" android:alpha="0.0" />
+        <Constraint android:id="@+id/tv_track_artist_full" android:alpha="0.0" />
+        <Constraint android:id="@+id/ib_like_song" android:alpha="0.0" />
+
+
+        <!-- We use the root layout's ID to constrain its height for the collapsed state -->
+        <Constraint
+            android:id="@+id/root_layout"
+            android:layout_height="64dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </ConstraintSet>
+
+    <!-- ConstraintSet for the EXPANDED (full-screen) state -->
+    <ConstraintSet android:id="@+id/expanded">
+        <!-- Make mini-player text and button invisible -->
+        <Constraint android:id="@+id/tv_track_title_mini" android:alpha="0.0" />
+        <Constraint android:id="@+id/tv_track_artist_mini" android:alpha="0.0" />
+        <Constraint android:id="@+id/ib_play_pause_mini" android:alpha="0.0" />
+
+        <Constraint
+            android:id="@+id/ib_like_song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toBottomOf="@id/ib_down_arrow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ib_down_arrow" />
+
+        <!-- ================================================================ -->
+        <!-- THIS IS THE FINAL FIX: Added layout_width/height and positioning -->
+        <!-- ================================================================ -->
+        <Constraint
+            android:id="@+id/tv_track_title_full"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toTopOf="@+id/tv_track_artist_full"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Constraint
+            android:id="@+id/tv_track_artist_full"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toTopOf="@+id/seekBar"
+            app:layout_constraintEnd_toEndOf="@+id/tv_track_title_full"
+            app:layout_constraintStart_toStartOf="@+id/tv_track_title_full" />
+        <!-- ================================================================ -->
+
+        <!-- Position the main album art -->
+        <Constraint
+            android:id="@id/iv_album_art_mini"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintBottom_toTopOf="@id/seekBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ib_down_arrow" />
+
+        <!-- Position the down arrow -->
+        <Constraint
+            android:id="@+id/ib_down_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:alpha="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Position the full-screen controls -->
+        <Constraint
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toTopOf="@id/ib_play_pause_full"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Constraint
+            android:id="@+id/ib_play_pause_full"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginBottom="64dp"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Constraint
+            android:id="@+id/ib_skip_next_full"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toBottomOf="@id/ib_play_pause_full"
+            app:layout_constraintStart_toEndOf="@id/ib_play_pause_full"
+            app:layout_constraintTop_toTopOf="@id/ib_play_pause_full" />
+
+        <Constraint
+            android:id="@+id/ib_skip_previous_full"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="16dp"
+            android:alpha="1.0"
+            app:layout_constraintBottom_toBottomOf="@id/ib_play_pause_full"
+            app:layout_constraintEnd_toStartOf="@id/ib_play_pause_full"
+            app:layout_constraintTop_toTopOf="@id/ib_play_pause_full" />
+
+    </ConstraintSet>
+
+</MotionScene>
