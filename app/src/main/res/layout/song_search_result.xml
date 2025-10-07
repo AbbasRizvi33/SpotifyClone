@@ -1,20 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <variable
+            name="likedsongs"
+            type="com.example.spotifycloneapp.bindingclassess.DisplaySongData" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        >
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent="0.05"-->
+<!--            android:id="@+id/v1"/>-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent="0.95"-->
+<!--            android:id="@+id/v2"/>-->
+
+
+
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/imagecover"
+        android:elevation="20dp"
+        android:layout_marginHorizontal="15dp"
         >
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_launcher_background"
+            android:scaleType="centerCrop"
             android:id="@+id/songimage"/>
 
     </com.google.android.material.card.MaterialCardView>
@@ -32,15 +61,48 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Song title"
-            android:textSize="12sp"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:maxLength="10"
+            android:ellipsize="end"
             android:id="@+id/songtitle"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="desc"
-            android:textSize="9sp"
+            android:maxLength="10"
+            android:ellipsize="end"
+            android:textSize="14sp"
+            android:textColor="@color/white"
             android:id="@+id/songdesc"/>
     </LinearLayout>
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fav2"
+            app:layout_constraintTop_toTopOf="@id/imagecover"
+            app:layout_constraintBottom_toBottomOf="@id/imagecover"
+            app:layout_constraintEnd_toStartOf="@id/playSong"
+            android:id="@+id/likeSong"
+            android:background="@null"
+            android:padding="12dp"
+            app:tint="@color/white" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/imagecover"
+            app:layout_constraintBottom_toBottomOf="@id/imagecover"
+            android:id="@+id/playSong"
+            android:background="@null"
+            android:src="@drawable/ic_play"
+            android:padding="12dp"
+            android:layout_marginRight="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

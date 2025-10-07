@@ -29,15 +29,7 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_begin="64dp" />
 
-        <ImageButton
-            android:id="@+id/ib_like_song"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:alpha="0.0"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/fav"
-            app:tint="@color/white"
-            tools:ignore="ContentDescription" />
+
 
 
         <ImageView
@@ -120,8 +112,7 @@
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/tv_track_artist_full"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_track_artist_full"
             tools:text="Song Title Full" />
 
         <TextView
@@ -135,10 +126,22 @@
             android:maxLines="1"
             android:textColor="@android:color/white"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/seekBar"
-            app:layout_constraintEnd_toEndOf="@+id/tv_track_title_full"
+            app:layout_constraintTop_toBottomOf="@+id/tv_track_title_full"
             app:layout_constraintStart_toStartOf="@+id/tv_track_title_full"
             tools:text="Artist Name Full" />
+
+        <ImageButton
+            android:id="@+id/ib_like_song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.0"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/fav"
+            app:tint="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/iv_album_art_mini"
+            app:layout_constraintTop_toTopOf="@+id/tv_track_title_full"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_track_artist_full"
+            tools:ignore="ContentDescription" />
 
         <SeekBar
             android:id="@+id/seekBar"
