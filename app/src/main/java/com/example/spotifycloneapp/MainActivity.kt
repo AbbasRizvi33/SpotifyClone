@@ -4,10 +4,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.animation.OvershootInterpolator
-import android.view.animation.ScaleAnimation
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -25,13 +22,26 @@ import com.example.spotifycloneapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.content.ComponentName
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaControllerCompat
+import android.support.v4.media.session.PlaybackStateCompat
+import com.example.spotifycloneapp.Services.MusicService
+import com.example.spotifycloneapp.ViewModels.SharedViewModel
+import com.example.spotifycloneapp.bindingclassess.DisplaySongData
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
+    private val sharedvm : SharedViewModel by viewModels()
+
+    private lateinit var mediaBrowser: MediaBrowserCompat
+    private var mediaController: MediaControllerCompat? = null
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +54,101 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         askNotificationPermission()
-//        createNotificationChannel()
         init()
         listenViewModel()
 
 
     }
+
+
+    private val controllerCallback = object : MediaControllerCompat.Callback() {
+        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
+            super.onMetadataChanged(metadata)
+            sharedvm.updateMetadata(metadata)
+        }
+        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+            super.onPlaybackStateChanged(state)
+            sharedvm.updatePlaybackState(state)
+        }
+    }
+
+    private val mediaControllerCallback = object : MediaControllerCompat.Callback() {
+        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
+            super.onPlaybackStateChanged(state)
+            sharedvm.updatePlaybackState(state)
+        }
+    }
+
+
+    private fun init() {
+        mediaBrowser = MediaBrowserCompat(
+            this,
+            ComponentName(this, MusicService::class.java),object : MediaBrowserCompat.ConnectionCallback() {
+                override fun onConnected() {
+                    mediaController = MediaControllerCompat(this@MainActivity, mediaBrowser.sessionToken)
+                    MediaControllerCompat.setMediaController(this@MainActivity, this@MainActivity.mediaController)
+                    mediaController?.registerCallback(controllerCallback)
+                    mediaController?.let {
+                        sharedvm.setController(it)
+                    }
+                    mediaBrowser.subscribe(mediaBrowser.root, object : MediaBrowserCompat.SubscriptionCallback() {
+                        override fun onChildrenLoaded(
+                            parentId: String,
+                            children: MutableList<MediaBrowserCompat.MediaItem>
+                        ) {
+                            super.onChildrenLoaded(parentId, children)
+                            val songs = children.mapNotNull { item ->
+                                item?.let {
+                                    DisplaySongData(
+                                        mediaId = it.mediaId!!,
+                                        title = it.description.title?.toString() ?: "Unknown Title",
+                                        artist = it.description.subtitle?.toString() ?: "Unknown Artist",
+                                        filePath = it.description.mediaUri?.toString() ?: "",
+                                        category = it.description.extras?.getString("category") ?: "Music",
+                                        coverPath = it.description.extras?.getString("coverPath") ?: "",
+                                        isLiked = it.description.extras?.getBoolean("isLiked") ?: false
+                                    )
+                                }
+                            }
+                            sharedvm.setSongs(songs)
+                        }
+                    })
+
+                    mediaBrowser.subscribe(MusicService.LIKED_SONGS_ROOT_ID, object : MediaBrowserCompat.SubscriptionCallback() {
+                        override fun onChildrenLoaded(
+                            parentId: String,
+                            children: MutableList<MediaBrowserCompat.MediaItem>
+                        ) {
+                            super.onChildrenLoaded(parentId, children)
+                            val likedSongs = children.mapNotNull { item ->
+                                item?.let {
+                                    DisplaySongData(
+                                        mediaId = it.mediaId!!,
+                                        title = it.description.title?.toString() ?: "",
+                                        artist = it.description.subtitle?.toString() ?: "",
+                                        filePath = it.description.mediaUri?.toString() ?: "",
+                                        category = it.description.extras?.getString("category") ?: "",
+                                        coverPath = it.description.extras?.getString("coverPath") ?: "",
+                                        isLiked = it.description.extras?.getBoolean("isLiked") ?: false
+                                    )
+                                }
+                            }
+                            sharedvm.setLikedSongs(likedSongs)
+                        }
+                    })
+
+                }
+            },
+            null
+        )
+        mediaBrowser.connect()
+
+        binding.fragmentHolder.adapter = FragmentHolderAdapter(this)
+        binding.fragmentHolder.isUserInputEnabled = false
+        setupBtmNavFragSync()
+        viewModel.preloadSongsOnce()
+    }
+
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -65,30 +164,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-//    private fun createNotificationChannel() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val channel = NotificationChannel(
-//                "default_channel",
-//                "Music Playback",
-//                NotificationManager.IMPORTANCE_LOW
-//            ).apply {
-//                description = "Channel for SpotifyClone music playback notifications"
-//            }
-//
-//            val manager = getSystemService(NotificationManager::class.java)
-//            manager.createNotificationChannel(channel)
-//        }
-//    }
+
 
     fun listenViewModel(){
         lifecycleScope.launch {
             viewModel.UIEvents.collect {
                 it->when(it){
                     is MainActivityUIEvents.setHolderItem->binding.fragmentHolder.currentItem=it.position
-//                is MainActivityUIEvents.startAnimation->{
-//                    val iconView = binding.btmnav.findViewById<View>(it.itemId)
-//                    iconView?.bounceAnimation()
-//                }
                 else -> {}
                 }
             }
@@ -103,7 +185,6 @@ class MainActivity : AppCompatActivity() {
 
             val iconView = binding.btmnav.findViewById<View>(item.itemId)
             val anim= AnimationUtils.loadAnimation(this@MainActivity,R.anim.small_bounce)
-//            iconView?.animation=anim
             iconView.startAnimation(anim)
 
             true
@@ -117,12 +198,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun init(){
-        binding.fragmentHolder.adapter= FragmentHolderAdapter(this)
-        binding.fragmentHolder.isUserInputEnabled=false
-       setupBtmNavFragSync()
-        viewModel.preloadSongsOnce()
 
-
+    override fun onStop() {
+        super.onStop()
+        if (MediaControllerCompat.getMediaController(this) != null) {
+            MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
+        }
+        mediaBrowser.disconnect()
     }
 }

@@ -8,22 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.spotifycloneapp.R
 import com.example.spotifycloneapp.ViewModels.NowPlayingViewModel
+import com.example.spotifycloneapp.ViewModels.SharedViewModel
 import com.example.spotifycloneapp.databinding.FragmentNowPlayingBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.getValue
 
-// Add this annotation so Hilt can inject the ViewModel
 @AndroidEntryPoint
 class NowPlaying : Fragment() {
 
     private var _binding: FragmentNowPlayingBinding? = null
     private val binding get() = _binding!!
 
-    // Get the Hilt ViewModel
     private val viewModel: NowPlayingViewModel by viewModels()
+    private val sharedvm: SharedViewModel by activityViewModels()
 
     private var isUserSeeking = false
 
@@ -43,10 +45,10 @@ class NowPlaying : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.currentMetadata.observe(viewLifecycleOwner) { metadata ->
+        sharedvm.metadata.observe(viewLifecycleOwner) { metadata ->
             updateMetadataUI(metadata)
         }
-        viewModel.playbackState.observe(viewLifecycleOwner) { state ->
+        sharedvm.state.observe(viewLifecycleOwner) { state ->
             updatePlaybackStateUI(state)
         }
         viewModel.currentPosition.observe(viewLifecycleOwner) { position ->
@@ -54,11 +56,17 @@ class NowPlaying : Fragment() {
                 binding.seekBar.progress = position.toInt()
             }
         }
-        // Observe the new LiveData for the liked status
-        viewModel.isCurrentSongLiked.observe(viewLifecycleOwner) { isLiked ->
-            val icon = if (isLiked) R.drawable.fav2 else R.drawable.fav
-            binding.ibLikeSong.setImageResource(icon)
+
+        sharedvm.currentPosition.observe(viewLifecycleOwner) { position ->
+            // The position can be null if playback hasn't started
+            if (!isUserSeeking && position != null) {
+                binding.seekBar.progress = position.toInt()
+            }
         }
+//        viewModel.isCurrentSongLiked.observe(viewLifecycleOwner) { isLiked ->
+//            val icon = if (isLiked) R.drawable.fav2 else R.drawable.fav
+//            binding.ibLikeSong.setImageResource(icon)
+//        }
     }
 
     private fun setupClickListeners() {
@@ -69,40 +77,36 @@ class NowPlaying : Fragment() {
             binding.rootLayout.transitionToStart()
         }
 
-        binding.ibPlayPauseMini.setOnClickListener { viewModel.playPause() }
-        binding.ibPlayPauseFull.setOnClickListener { viewModel.playPause() }
-        binding.ibSkipNextFull.setOnClickListener { viewModel.skipToNext() }
-        binding.ibSkipPreviousFull.setOnClickListener { viewModel.skipToPrevious() }
+        binding.ibPlayPauseMini.setOnClickListener { sharedvm.playPause() }
+        binding.ibPlayPauseFull.setOnClickListener { sharedvm.playPause() }
+        binding.ibSkipNextFull.setOnClickListener { sharedvm.skipToNext() }
+        binding.ibSkipPreviousFull.setOnClickListener { sharedvm.skipToPrevious() }
 
-        // Add a click listener for the new like button in the expanded player
         binding.ibLikeSong.setOnClickListener {
-            viewModel.toggleLikeForCurrentSong()
+            sharedvm.toggleLikeForCurrentSong()
         }
     }
 
     private fun updateMetadataUI(metadata: MediaMetadataCompat?) {
         if (metadata == null) return
 
-        // Get all the data. The 'duration' is correct from the MusicService fix.
         val title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
         val artist = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
         val artUri = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
         val duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-
-        // --- Update UI for BOTH players ---
-
-        // Update the small player views
         binding.tvTrackTitleMini.text = title
         binding.tvTrackArtistMini.text = artist
 
-        // THIS IS THE FIX: Update the NEW big player views
         binding.tvTrackTitleFull.text = title
         binding.tvTrackArtistFull.text = artist
 
-        // This fixes the slider
+        val isLiked:Boolean = metadata.getString("isLiked").toBoolean()
+        val icon = if (isLiked) R.drawable.fav2 else R.drawable.fav
+        binding.ibLikeSong.setImageResource(icon)
+//        binding.ibLikeSongMini.setImageResource(icon)
+
         binding.seekBar.max = if (duration > 0) duration.toInt() else 0
 
-        // This will update the album art
         Glide.with(this)
             .load(artUri)
             .placeholder(R.drawable.spotify_icon_foreground)
@@ -136,7 +140,7 @@ class NowPlaying : Fragment() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 seekBar?.let {
-                    viewModel.seekTo(it.progress.toLong())
+                    sharedvm.seekTo(it.progress.toLong())
                 }
                 isUserSeeking = false
             }
