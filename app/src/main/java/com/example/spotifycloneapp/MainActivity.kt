@@ -27,12 +27,14 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
+import com.example.spotifycloneapp.Fragments.Library
 import com.example.spotifycloneapp.Services.MusicService
 import com.example.spotifycloneapp.ViewModels.SharedViewModel
 import com.example.spotifycloneapp.bindingclassess.DisplaySongData
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Library.ActivityCallbacks {
     private lateinit var binding:ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
     private val sharedvm : SharedViewModel by viewModels()
@@ -60,6 +62,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun setBottomBarVisibility(isVisible: Boolean) {
+
+        binding.btmnav.visibility = if (isVisible) View.VISIBLE else View.GONE
+        binding.nowPlayingFragment.visibility = if (isVisible) View.VISIBLE else View.GONE
+    }
 
     private val controllerCallback = object : MediaControllerCompat.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
@@ -88,9 +95,9 @@ class MainActivity : AppCompatActivity() {
                     mediaController = MediaControllerCompat(this@MainActivity, mediaBrowser.sessionToken)
                     MediaControllerCompat.setMediaController(this@MainActivity, this@MainActivity.mediaController)
                     mediaController?.registerCallback(controllerCallback)
-                    mediaController?.let {
-                        sharedvm.setController(it)
-                    }
+                    sharedvm.setController(mediaController!!)
+                    sharedvm.updateMetadata(mediaController?.metadata)
+                    sharedvm.updatePlaybackState(mediaController?.playbackState)
                     mediaBrowser.subscribe(mediaBrowser.root, object : MediaBrowserCompat.SubscriptionCallback() {
                         override fun onChildrenLoaded(
                             parentId: String,
@@ -109,6 +116,12 @@ class MainActivity : AppCompatActivity() {
                                         isLiked = it.description.extras?.getBoolean("isLiked") ?: false
                                     )
                                 }
+                            }
+                            if (songs.isEmpty()) {
+                                // Log an error: This means your MusicService is not returning songs.
+                                Log.e("MainActivity", "The master song list returned by MusicService is empty!")
+                            } else {
+                                Log.d("MainActivity", "Successfully loaded ${songs.size} songs.")
                             }
                             sharedvm.setSongs(songs)
                         }
@@ -198,12 +211,19 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+//    override fun onStart() {
+//        super.onStart()
+//        if (!mediaBrowser.isConnected) {
+//            mediaBrowser.connect()
+//        }
+//    }
 
     override fun onStop() {
         super.onStop()
-        if (MediaControllerCompat.getMediaController(this) != null) {
-            MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
+        mediaController?.unregisterCallback(controllerCallback)
+        if (mediaBrowser.isConnected) {
+            mediaBrowser.disconnect()
         }
-        mediaBrowser.disconnect()
     }
+
 }

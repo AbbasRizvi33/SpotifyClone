@@ -4,8 +4,11 @@
 
     <data>
         <variable
-            name="likedsongs"
-            type="com.example.spotifycloneapp.bindingclassess.DisplaySongData" />
+            name="songData"
+            type="com.example.spotifycloneapp.bindingclassess.AdapterClassData" />
+        <variable
+            name="isPlaying"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,17 +63,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Song title"
+            android:text="@{songData.title}"
             android:textSize="18sp"
-            android:textColor="@color/white"
-            android:maxLength="10"
+            android:textColor="@{isPlaying ? @color/green : @color/white}"
+            android:maxLines="1"
             android:ellipsize="end"
             android:id="@+id/songtitle"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="desc"
-            android:maxLength="10"
+            android:text="@{songData.artist}"
+            android:maxLines="1"
             android:ellipsize="end"
             android:textSize="14sp"
             android:textColor="@color/white"
@@ -80,13 +83,14 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/fav2"
             app:layout_constraintTop_toTopOf="@id/imagecover"
             app:layout_constraintBottom_toBottomOf="@id/imagecover"
             app:layout_constraintEnd_toStartOf="@id/playSong"
             android:id="@+id/likeSong"
             android:background="@null"
+            android:onClick="@{() -> songData.onLikeSongClick != null ? songData.onLikeSongClick.invoke() : null}"
             android:padding="12dp"
+            android:src="@{songData.isLiked ? @drawable/fav2 : @drawable/fav}"
             app:tint="@color/white" />
 
         <ImageButton
@@ -96,10 +100,11 @@
             app:layout_constraintBottom_toBottomOf="@id/imagecover"
             android:id="@+id/playSong"
             android:background="@null"
-            android:src="@drawable/ic_play"
+            android:src="@{isPlaying ? @drawable/ic_pause : @drawable/ic_play}"
             android:padding="12dp"
             android:layout_marginRight="15dp"
             app:layout_constraintEnd_toEndOf="parent"
+            android:onClick="@{() -> songData.onPlaySongClick != null ? songData.onPlaySongClick.invoke() : null}"
             app:tint="@color/white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

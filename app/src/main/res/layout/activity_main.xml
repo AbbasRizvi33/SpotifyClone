@@ -26,7 +26,7 @@
             app:layout_constraintBottom_toTopOf="@id/btmnav"
             android:id="@+id/fragmentHolder"/>
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/nowPlayingFragment"
@@ -35,18 +35,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+
+
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/btmnav"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fragmentHolder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/btm_nav_menu"
-            android:background="@color/black"
+            android:background="@color/background"
             app:itemTextColor="@color/white"
             app:itemIconTint="@color/white"
+            app:labelVisibilityMode="labeled"
             app:itemActiveIndicatorStyle="@null"
             style="@style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface"
             />

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutDescription="@xml/fragment_now_playing_xml_root_layout_scene"
-        android:background="@color/background2"
+        android:background="@color/background3"
         tools:context=".Fragments.NowPlaying">
 
         <View
@@ -113,6 +113,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/tv_track_artist_full"
             app:layout_constraintStart_toStartOf="@+id/tv_track_artist_full"
+            android:fontFamily="@font/poppins_bold"
             tools:text="Song Title Full" />
 
         <TextView
@@ -128,6 +129,7 @@
             android:textSize="16sp"
             app:layout_constraintTop_toBottomOf="@+id/tv_track_title_full"
             app:layout_constraintStart_toStartOf="@+id/tv_track_title_full"
+            android:fontFamily="@font/poppins"
             tools:text="Artist Name Full" />
 
         <ImageButton
