@@ -66,49 +66,49 @@ class MainActivityViewModel @Inject constructor(
                         title = "12 to 12",
                         artist = "Sombr",
                         category = "Pop",
-                        filePath = "android.resource://${context.packageName}/${R.raw.sombr}",
+                        filePath = "android.resource://${context.packageName}/raw/sombr",
                         coverPath = "android.resource://${context.packageName}/drawable/cover1"
                     ),
                     SongEntity(
                         title = "Dracula",
                         artist = "Tame Impala",
                         category = "Rock",
-                        filePath = "android.resource://${context.packageName}/${R.raw.dracula}",
+                        filePath = "android.resource://${context.packageName}/raw/dracula",
                         coverPath = "android.resource://${context.packageName}/drawable/cover2"
                     ),
                     SongEntity(
                         title = "Electric",
                         artist = "Alina Baraz",
                         category = "Pop",
-                        filePath = "android.resource://${context.packageName}/${R.raw.electric}",
+                        filePath = "android.resource://${context.packageName}/raw/electric",
                         coverPath = "android.resource://${context.packageName}/drawable/cover2"
                     ),
                     SongEntity(
                         title = "Oh what a drenched man i am",
                         artist = "Suicide Boys",
                         category = "Pop",
-                        filePath = "android.resource://${context.packageName}/${R.raw.drechedman}",
+                        filePath = "android.resource://${context.packageName}/raw/drechedman",
                         coverPath = "android.resource://${context.packageName}/drawable/cover2"
                     ),
                     SongEntity(
                         title = "Fallen Star",
                         artist = "Neighbourhood",
                         category = "Pop",
-                        filePath = "android.resource://${context.packageName}/${R.raw.fallenstar}",
+                        filePath = "android.resource://${context.packageName}/raw/fallenstar",
                         coverPath = "android.resource://${context.packageName}/drawable/cover2"
                     ),
                     SongEntity(
                         title = "You are the right one",
                         artist = "Sports",
                         category = "Rock",
-                        filePath = "android.resource://${context.packageName}/${R.raw.uaretherightone}",
+                        filePath = "android.resource://${context.packageName}/raw/uaretherightone",
                         coverPath = "android.resource://${context.packageName}/drawable/cover2"
                     ),
                     SongEntity(
                         title = "A Little Death",
                         artist = "Neighbourhood",
                         category = "Rock",
-                        filePath = "android.resource://${context.packageName}/${R.raw.alildeath}",
+                        filePath = "android.resource://${context.packageName}/raw/alildeath",
                         coverPath = "android.resource://${context.packageName}/drawable/cover2"
                     )
                 )

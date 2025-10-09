@@ -14,4 +14,8 @@
     <string name="liked_songs">Liked Songs</string>
     <string name="_778">778</string>
     <string name="songs">songs</string>
+
+    <string name="notification_channel_name">Music Playback</string>
+    <string name="notification_channel_description">Shows the currently playing song</string>
+
 </resources>

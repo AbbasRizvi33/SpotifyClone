@@ -46,6 +46,13 @@ class SharedViewModel : ViewModel() {
     val currentPosition: LiveData<Long> = _currentPosition
     private var updateJob: Job? = null
 
+    private val _filteredLikedSongs = MutableLiveData<List<DisplaySongData>>()
+    val filteredLikedSongs: LiveData<List<DisplaySongData>> = _filteredLikedSongs
+
+    private val _filteredSearchedSongs = MutableLiveData<List<DisplaySongData>>()
+    val filteredSearchedSongs: LiveData<List<DisplaySongData>> = _filteredSearchedSongs
+
+
 //    fun updateCurrentPosition(position: Long) {
 //        // We use postValue because this will be called from a background thread in the service
 //        _currentPosition.postValue(position)
@@ -73,11 +80,15 @@ class SharedViewModel : ViewModel() {
 
     fun setSongs(songs: List<DisplaySongData>) {
         _songs.postValue(songs)
+//        _filteredSearchedSongs.postValue(songs)
     }
 
-    fun playReqSong(song: SongData) {
-        val songToPlay = songs.value?.find { it.filePath == song.filePath } ?: return
-        mediaController?.transportControls?.playFromMediaId(songToPlay.mediaId, null)
+
+    fun playReqSong(mediaId: String, parentMediaId: String) {
+        val extras = Bundle().apply {
+            putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, parentMediaId)
+        }
+        mediaController?.transportControls?.playFromMediaId(mediaId, extras)
     }
 
     fun skipToNext(){
@@ -88,6 +99,10 @@ class SharedViewModel : ViewModel() {
     }
     fun pause() {
         mediaController?.transportControls?.pause()
+    }
+
+    fun resume(){
+        mediaController?.transportControls?.play()
     }
 
     fun toggleLikeForCurrentSong() {
@@ -164,17 +179,43 @@ class SharedViewModel : ViewModel() {
         updateJob = null
     }
 
-    fun viewEvent(event : HomeUIEvents){
-        viewModelScope.launch {
-            when(event){
-                is HomeUIEvents.playSong -> playReqSong(event.song)
-                is HomeUIEvents.filterCategory -> {
-//                    showfilterSongs(event.category)
-                }
-                else -> {}
+    fun filterAllSongs(query: String){
+        val originalList = _songs.value ?: emptyList()
+
+        val filteredList = if (query.isEmpty()) {
+            originalList
+        } else {
+            originalList.filter { song ->
+                song.title.contains(query, ignoreCase = true) || song.artist.contains(query, ignoreCase = true)
             }
         }
+        _filteredSearchedSongs.postValue(filteredList)
     }
+
+    fun filterSongs(query: String) {
+        val originalList = _likedSongs.value ?: emptyList()
+
+        val filteredList = if (query.isEmpty()) {
+            originalList
+        } else {
+            originalList.filter { song ->
+                song.title.contains(query, ignoreCase = true) || song.artist.contains(query, ignoreCase = true)
+            }
+        }
+        _filteredLikedSongs.postValue(filteredList)
+    }
+
+//    fun viewEvent(event : HomeUIEvents){
+//        viewModelScope.launch {
+//            when(event){
+//                is HomeUIEvents.playSong -> playReqSong(event.song)
+//                is HomeUIEvents.filterCategory -> {
+////                    showfilterSongs(event.category)
+//                }
+//                else -> {}
+//            }
+//        }
+//    }
 
     fun showAllSongs(){
         viewModelScope.launch {

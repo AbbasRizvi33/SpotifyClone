@@ -11,4 +11,6 @@ sealed class RecieveEvents {
 
     object toggleLikeSongIcon : RecieveEvents()
 
+    data class filter(val songs: List<DisplaySongData>) : RecieveEvents()
+
 }

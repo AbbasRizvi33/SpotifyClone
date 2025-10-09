@@ -3,6 +3,8 @@
 package com.example.spotifycloneapp.Fragments
 
 import android.os.Bundle
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.spotifycloneapp.Adapters.CategoryAdapter
+import com.example.spotifycloneapp.Services.MusicService
 import com.example.spotifycloneapp.ViewModels.FragmentHomeViewModel
 import com.example.spotifycloneapp.ViewModels.SharedViewModel
 import com.example.spotifycloneapp.bindingclassess.SongCategory
@@ -28,7 +31,16 @@ class Home : Fragment() {
     private val categoryAdapter by lazy {
         CategoryAdapter(
             onSongClick = { song ->
-                sharedvm.playReqSong(song)
+                val isCurrentlyPlaying = sharedvm.state.value?.state == PlaybackStateCompat.STATE_PLAYING
+                val isThisThePlayingSong = sharedvm.metadata.value?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID) == song.mediaID
+
+                if (isCurrentlyPlaying && isThisThePlayingSong) {
+                    sharedvm.pause()
+                } else if (!isCurrentlyPlaying && isThisThePlayingSong) {
+                    sharedvm.resume()
+                } else {
+                    sharedvm.playReqSong(song.mediaID, MusicService.MEDIA_ROOT_ID)
+                }
             },
             context = requireContext()
         )
@@ -58,7 +70,8 @@ class Home : Fragment() {
                         SongData(
                             title = displaySong.title,
                             coverPath = displaySong.coverPath,
-                            filePath = displaySong.filePath
+                            filePath = displaySong.filePath,
+                            mediaID = displaySong.mediaId
                         )
                     }
                 )

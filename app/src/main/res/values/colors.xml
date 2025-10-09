@@ -8,6 +8,7 @@
     <color name="spotify_search_bg">#80FFFFFF</color>
     <color name="spotify_text">#FFFFFFFF</color> <!-- solid white -->
     <color name="spotify_chip_bg">#80FFFFFF</color>
-    <color name="spotify_chip_text">#FFFFFFFF</color> <!-- Solid white -->
+    <color name="spotify_chip_text">#FFFFFFFF</color>
+    <color name="background3">#141313</color> <!-- Solid white -->
 
 </resources>
