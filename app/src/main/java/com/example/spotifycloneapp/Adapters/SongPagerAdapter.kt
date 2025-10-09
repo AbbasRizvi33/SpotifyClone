@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.spotifycloneapp.R
 import com.example.spotifycloneapp.bindingclassess.SongData
 import com.example.spotifycloneapp.databinding.SingleCategoryItemBinding
 
@@ -15,6 +17,11 @@ class SongPagerAdapter(
     inner class SongViewHolder(val binding: SingleCategoryItemBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(song: SongData) {
             binding.song = song
+
+            Glide.with(itemView.context)
+                .load(song.coverPath)
+                .placeholder(R.drawable.spotify_icon_foreground)
+                .into(binding.imagee)
             binding.root.setOnClickListener { onSongClick(song) }
             binding.executePendingBindings()
         }

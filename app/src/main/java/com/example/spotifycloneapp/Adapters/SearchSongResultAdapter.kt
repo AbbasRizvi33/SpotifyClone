@@ -12,7 +12,6 @@ import com.example.spotifycloneapp.databinding.SearchSongResultBinding
 
 class SearchSongResultAdapter(
 ): ListAdapter<AdapterClassData, SearchSongResultAdapter.ViewHolder>(SearchSongResultDiffUtilsCallback()) {
-
     private var isPlaying = false
     private var currentPlayingSongId: String? = null
 

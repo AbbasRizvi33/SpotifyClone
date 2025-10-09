@@ -14,10 +14,8 @@ import javax.inject.Inject
 class FragmentHomeViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
-
     private val _GEvents : MutableSharedFlow<GeneralEvents> = MutableSharedFlow()
     val GEvents get() = _GEvents
-
 
     fun viewEvent(event : GeneralEvents){
         viewModelScope.launch {

@@ -1,11 +1,24 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    kotlin("plugin.serialization") version "2.2.20"
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { stream ->
+        localProperties.load(stream)
+    }
 }
 
 android {
+
+
     namespace = "com.example.spotifycloneapp"
     compileSdk = 36
 
@@ -17,11 +30,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SUPABASE_URL", localProperties.getProperty("SUPABASE_URL"))
+        buildConfigField("String", "SUPABASE_ANON_KEY", localProperties.getProperty("SUPABASE_ANON_KEY"))
     }
 
     buildFeatures {
 //        viewBinding=true
         dataBinding=true
+        buildConfig=true
     }
 
     buildTypes {
@@ -86,6 +103,16 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
     kapt("com.github.bumptech.glide:compiler:4.15.1")
+
+// In app/build.gradle.kts (or app/build.gradle)
+
+// This one line manages all Supabase library versions for you.
+    implementation(platform("io.github.jan-tennert.supabase:bom:2.6.0"))
+
+// Add the specific modules you need.
+    implementation("io.github.jan-tennert.supabase:postgrest-kt") // For database
+    implementation("io.github.jan-tennert.supabase:storage-kt")   // For file storage
+    implementation("io.ktor:ktor-client-okhttp:2.3.12")
 
 
 }

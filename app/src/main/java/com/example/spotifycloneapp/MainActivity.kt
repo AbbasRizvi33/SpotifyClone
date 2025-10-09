@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), Library.ActivityCallbacks {
         askNotificationPermission()
         init()
         listenViewModel()
-
+        observeLoadingState()
 
     }
 
@@ -79,12 +79,21 @@ class MainActivity : AppCompatActivity(), Library.ActivityCallbacks {
         }
     }
 
-    private val mediaControllerCallback = object : MediaControllerCompat.Callback() {
-        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            super.onPlaybackStateChanged(state)
-            sharedvm.updatePlaybackState(state)
+    private fun observeLoadingState() {
+        sharedvm.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
+                binding.loadingRoot.visibility = View.VISIBLE
+                val pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse)
+                binding.loadingLogo.startAnimation(pulseAnimation)
+            } else {
+                binding.loadingLogo.clearAnimation()
+                binding.loadingRoot.visibility = View.GONE
+            }
         }
     }
+
+
+
 
 
     private fun init() {
@@ -118,35 +127,12 @@ class MainActivity : AppCompatActivity(), Library.ActivityCallbacks {
                                 }
                             }
                             if (songs.isEmpty()) {
-                                // Log an error: This means your MusicService is not returning songs.
-                                Log.e("MainActivity", "The master song list returned by MusicService is empty!")
+                                Log.e("MainActivity", "The master song list returned by MusicService is empty")
                             } else {
                                 Log.d("MainActivity", "Successfully loaded ${songs.size} songs.")
+                                sharedvm.setSongs(songs)
                             }
-                            sharedvm.setSongs(songs)
-                        }
-                    })
 
-                    mediaBrowser.subscribe(MusicService.LIKED_SONGS_ROOT_ID, object : MediaBrowserCompat.SubscriptionCallback() {
-                        override fun onChildrenLoaded(
-                            parentId: String,
-                            children: MutableList<MediaBrowserCompat.MediaItem>
-                        ) {
-                            super.onChildrenLoaded(parentId, children)
-                            val likedSongs = children.mapNotNull { item ->
-                                item?.let {
-                                    DisplaySongData(
-                                        mediaId = it.mediaId!!,
-                                        title = it.description.title?.toString() ?: "",
-                                        artist = it.description.subtitle?.toString() ?: "",
-                                        filePath = it.description.mediaUri?.toString() ?: "",
-                                        category = it.description.extras?.getString("category") ?: "",
-                                        coverPath = it.description.extras?.getString("coverPath") ?: "",
-                                        isLiked = it.description.extras?.getBoolean("isLiked") ?: false
-                                    )
-                                }
-                            }
-                            sharedvm.setLikedSongs(likedSongs)
                         }
                     })
 
@@ -159,7 +145,6 @@ class MainActivity : AppCompatActivity(), Library.ActivityCallbacks {
         binding.fragmentHolder.adapter = FragmentHolderAdapter(this)
         binding.fragmentHolder.isUserInputEnabled = false
         setupBtmNavFragSync()
-        viewModel.preloadSongsOnce()
     }
 
     private fun askNotificationPermission() {
@@ -190,8 +175,6 @@ class MainActivity : AppCompatActivity(), Library.ActivityCallbacks {
         }
     }
 
-
-
     fun setupBtmNavFragSync(){
         binding.btmnav.setOnItemSelectedListener {item ->
             viewModel.navItemSelected(item.itemId)
@@ -211,12 +194,6 @@ class MainActivity : AppCompatActivity(), Library.ActivityCallbacks {
         })
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//        if (!mediaBrowser.isConnected) {
-//            mediaBrowser.connect()
-//        }
-//    }
 
     override fun onStop() {
         super.onStop()

@@ -30,8 +30,9 @@ interface SongDao {
     @Query("UPDATE songs SET isLiked = :isLiked WHERE id = :songId")
     suspend fun updateLikedStatus(songId: Int, isLiked: Boolean)
 
-    // In SongDao.kt
     @Query("SELECT * FROM songs WHERE title = :title LIMIT 1")
     suspend fun getSongByTitle(title: String?): SongEntity?
 
+    @Query("DELETE FROM songs")
+    suspend fun deleteAllSongs()
 }
