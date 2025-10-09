@@ -17,7 +17,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 
 class LikedSongsAdapter(
 ): ListAdapter<AdapterClassData, LikedSongsAdapter.ViewHolder>(LikedSongsDiffUtilsCallback()){
-
     private var isPlaying = false
     private var currentPlayingSongId: String? = null
     fun updatePlaybackState(playing: Boolean, songId: String?) {

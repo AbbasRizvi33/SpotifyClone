@@ -13,7 +13,6 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import androidx.media.MediaBrowserServiceCompat
@@ -39,37 +38,26 @@ import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class MusicService : MediaBrowserServiceCompat(), Player.Listener {
-
-
     @Inject lateinit var repo: Repository
+    @Inject lateinit var exoPlayer: ExoPlayer
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     companion object {
         const val CHANNEL_ID = "music_channel"
         const val NOTIFICATION_ID = 1
         const val MEDIA_ROOT_ID = "root_id"
-        const val LIKED_SONGS_ROOT_ID = "liked_songs_id"
         const val ACTION_UNLIKE_SONG = "com.example.spotifycloneapp.ACTION_UNLIKE_SONG"
         const val ACTION_LIKE_SONG = "com.example.spotifycloneapp.ACTION_LIKE_SONG"
 
     }
 
-
-    private lateinit var exoPlayer: ExoPlayer
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var playbackStateBuilder: PlaybackStateCompat.Builder
 
     private var playlist: List<MediaItem> = emptyList()
-    //    private var songs: List<SongEntity> = emptyList()
     private var currentIndex = 0
 
-            override fun onCreate() {
+    override fun onCreate() {
         super.onCreate()
-//        serviceScope.launch {
-//            fetchData()
-//        }
-
-        exoPlayer = ExoPlayer.Builder(this).build()
-        exoPlayer.setWakeMode(com.google.android.exoplayer2.C.WAKE_MODE_NETWORK)
         exoPlayer.addListener(this)
 
         mediaSession = MediaSessionCompat(this, "MusicService").apply {
@@ -77,7 +65,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
             isActive = true
         }
         sessionToken = mediaSession.sessionToken
-
 
         playbackStateBuilder = PlaybackStateCompat.Builder().setActions(
             PlaybackStateCompat.ACTION_PLAY or
@@ -95,19 +82,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
             .build()
         startForeground(NOTIFICATION_ID, notification)
     }
-
-//    private suspend fun fetchData(){
-//
-//        withContext(Dispatchers.IO){
-//            repo.getAllSongs().collect {
-//                    data->
-//                if(data.isNotEmpty()){
-//                    songs = data
-//                    notifyChildrenChanged(MEDIA_ROOT_ID)
-//                }
-//            }
-//        }
-//    }
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         if (playbackState == Player.STATE_READY && exoPlayer.currentMediaItem != null) {
@@ -130,9 +104,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
         BrowserRoot(MEDIA_ROOT_ID, null)
 
 
-
-// In MusicService.kt
-
     override fun onLoadChildren(
         parentId: String,
         result: Result<MutableList<MediaBrowserCompat.MediaItem>>
@@ -140,15 +111,9 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
         result.detach()
         serviceScope.launch(Dispatchers.IO) {
             val allSongs = repo.getAllSongs().first()
-
             val mediaItems = when (parentId) {
                 MEDIA_ROOT_ID -> {
                     allSongs.map { song ->
-                        createMediaItem(song)
-                    }.toMutableList()
-                }
-                LIKED_SONGS_ROOT_ID -> {
-                    allSongs.filter { it.isLiked }.map { song ->
                         createMediaItem(song)
                     }.toMutableList()
                 }
@@ -158,7 +123,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
 
         }
     }
-
 
     private fun createMediaItem(song: SongEntity): MediaBrowserCompat.MediaItem {
         val extras = Bundle().apply {
@@ -177,7 +141,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
 
         return MediaBrowserCompat.MediaItem(description, MediaBrowserCompat.MediaItem.FLAG_PLAYABLE)
     }
-
 
     private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onSeekTo(pos: Long) {
@@ -217,7 +180,7 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
 
             val parentMediaId = extras?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
             val clickedSongExistsInCurrentPlaylist = playlist.any { it.mediaId == mediaId }
-            val currentPlaylistParentId = mediaSession.controller?.metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST) // Using a spare field to store this
+            val currentPlaylistParentId = mediaSession.controller?.metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST)
 
             if (clickedSongExistsInCurrentPlaylist && parentMediaId == currentPlaylistParentId) {
                 serviceScope.launch(Dispatchers.Main) {
@@ -232,7 +195,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
                 serviceScope.launch(Dispatchers.IO) {
                     val songSource =
                         when (parentMediaId) {
-                            LIKED_SONGS_ROOT_ID -> repo.getAllSongs().first().filter { it.isLiked }
                             MEDIA_ROOT_ID -> repo.getAllSongs().first()
                             else -> repo.getAllSongs().first()
                         }
@@ -263,8 +225,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
 
                     }
 
-
-
                     withContext(Dispatchers.Main) {
                         playCurrentTrack()
                     }
@@ -272,58 +232,16 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
             }
         }
 
-
-
-
-
-//        override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
-//            super.onPlayFromMediaId(mediaId, extras)
-//
-//            serviceScope.launch(Dispatchers.IO) {
-//                val allSongs = repo.getAllSongs().first()
-//                currentIndex = allSongs.indexOfFirst { it.id.toString() == mediaId }
-//
-//                if (currentIndex != -1) {
-////                    songs = allSongs
-//
-//                    playlist = allSongs.map { songEntity ->
-//                        val exoPlayerMediaMetadata = com.google.android.exoplayer2.MediaMetadata.Builder()
-//                            .setTitle(songEntity.title)
-//                            .setArtist(songEntity.artist)
-//                            .setArtworkUri(songEntity.coverPath?.let { Uri.parse(it) })
-//                            .build()
-//
-//                        MediaItem.Builder()
-//                            .setUri(songEntity.filePath)
-//                            .setMediaId(songEntity.id.toString())
-//                            .setMediaMetadata(exoPlayerMediaMetadata)
-//                            .build()
-//                    }
-//                    withContext(Dispatchers.Main) {
-//                        playCurrentTrack()
-//                    }
-//                }
-//            }
-//        }
-
-        // In MusicService.kt
-
-// In MusicService.kt
-
         private suspend fun refreshCurrentSongMetadata() {
-            // 1. ACCESS EXOPLAYER ON MAIN THREAD
             val currentMediaItem = withContext(Dispatchers.Main) {
-                exoPlayer.currentMediaItem // This must be called on the main thread
+                exoPlayer.currentMediaItem
             } ?: return
 
             val currentMediaId = currentMediaItem.mediaId.toIntOrNull() ?: return
-
-            // 2. Get the updated SongEntity from the repository (KEEP ON IO THREAD)
             val updatedSong = withContext(Dispatchers.IO) {
                 repo.getAllSongs().first().find { it.id == currentMediaId }
             } ?: return
 
-            // 3. Create a new MediaItem with updated metadata (KEEP ON IO THREAD if needed, but safe here)
             val updatedExoPlayerMediaMetadata = currentMediaItem.mediaMetadata.buildUpon()
                 .setExtras(Bundle().apply { putString("isLiked", updatedSong.isLiked.toString()) })
                 .build()
@@ -332,29 +250,12 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
                 .setMediaMetadata(updatedExoPlayerMediaMetadata)
                 .build()
 
-            // 4. Update the MediaSession metadata on the main thread
             withContext(Dispatchers.Main) {
-                // The updateMetadata function contains mediaSession.setMetadata(),
-                // which must run on the thread that created the MediaSession (the main thread).
                 updateMetadata(updatedMediaItem)
             }
         }
 
 
-
-//        private fun playCurrentTrack() {
-//            if (playlist.isEmpty() || currentIndex < 0 || currentIndex >= playlist.size) return
-////            val track = playlist[currentIndex]
-////            exoPlayer.setMediaItem(track)
-////            exoPlayer.prepare()
-////            exoPlayer.play()
-//            exoPlayer.setMediaItems(playlist, currentIndex, 0L)
-//            exoPlayer.prepare()
-//            exoPlayer.playWhenReady = true
-////            this@MusicService.updateMetadata(playlist[currentIndex])
-////            updatePlaybackState(PlaybackStateCompat.STATE_PLAYING)
-//            showNotification()
-//        }
 
         override fun onCustomAction(action: String?, extras: Bundle?) {
             super.onCustomAction(action, extras)
@@ -373,22 +274,17 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
         private fun unlikeASong(songID : Int){
             serviceScope.launch {
                 repo.updateLikedStatus(songID, false)
-                notifyChildrenChanged(LIKED_SONGS_ROOT_ID)
                 notifyChildrenChanged(MEDIA_ROOT_ID)
 
                 val currentPlayingId = mediaSession.controller.metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toIntOrNull()
                 if (currentPlayingId == songID) {
                     refreshCurrentSongMetadata()
                 }
-
-//                notifyChildrenChanged(MEDIA_ROOT_ID)
             }
         }
-
         private fun likeASong(songID : Int){
             serviceScope.launch {
                 repo.updateLikedStatus(songID, true)
-                notifyChildrenChanged(LIKED_SONGS_ROOT_ID)
                 notifyChildrenChanged(MEDIA_ROOT_ID)
                 val currentPlayingId = mediaSession.controller.metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)?.toIntOrNull()
                 if (currentPlayingId == songID) {
@@ -398,36 +294,6 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
             }
         }
 
-
-
-
-
-//        override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
-//            extras?.let {
-//                val filePaths = it.getStringArray("filePaths")
-//                val titles = it.getStringArray("titles")
-//                val artists = it.getStringArray("artists")
-//                val coverPaths = it.getStringArray("coverPaths")
-//                currentIndex = it.getInt("currentIndex", 0)
-//
-//                if (filePaths != null && titles != null && artists != null && coverPaths != null) {
-//                    playlist = filePaths.mapIndexed { index, path ->
-//                        val exoPlayerMediaMetadata = com.google.android.exoplayer2.MediaMetadata.Builder()
-//                            .setTitle(titles[index])
-//                            .setArtist(artists[index])
-//                            .setArtworkUri(coverPaths[index]?.let { Uri.parse(it) })
-//                            .build()
-//
-//                        MediaItem.Builder()
-//                            .setUri(path)
-//                            .setMediaId(titles[index])
-//                            .setMediaMetadata(exoPlayerMediaMetadata)
-//                            .build()
-//                    }
-//                    playCurrentTrack()
-//                }
-//            }
-//        }
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return START_STICKY
@@ -435,27 +301,13 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
 
     private fun playCurrentTrack() {
         if (playlist.isEmpty() || currentIndex < 0 || currentIndex >= playlist.size) return
-//            val track = playlist[currentIndex]
-//            exoPlayer.setMediaItem(track)
-//            exoPlayer.prepare()
-//            exoPlayer.play()
         exoPlayer.setMediaItems(playlist, currentIndex, 0L)
         exoPlayer.prepare()
         exoPlayer.playWhenReady = true
-            this@MusicService.updateMetadata(playlist[currentIndex])
-            updatePlaybackState(PlaybackStateCompat.STATE_PLAYING)
+        this@MusicService.updateMetadata(playlist[currentIndex])
+        updatePlaybackState(PlaybackStateCompat.STATE_PLAYING)
         showNotification()
     }
-//    private fun playCurrentTrack() {
-//        if (playlist.isEmpty()) return
-//        val track = playlist.getOrNull(currentIndex) ?: return
-//        exoPlayer.setMediaItem(track)
-//        exoPlayer.prepare()
-//        exoPlayer.play()
-//        updatePlaybackState(PlaybackStateCompat.STATE_PLAYING)
-//        showNotification()
-//    }
-
     private fun updateMetadata(track: MediaItem) {
         val title = track.mediaMetadata.title?.toString() ?: "Unknown Title"
         val artist = track.mediaMetadata.artist?.toString() ?: "Unknown Artist"

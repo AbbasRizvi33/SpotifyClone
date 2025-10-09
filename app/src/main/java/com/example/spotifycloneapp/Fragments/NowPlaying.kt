@@ -63,10 +63,6 @@ class NowPlaying : Fragment() {
                 binding.seekBar.progress = position.toInt()
             }
         }
-//        viewModel.isCurrentSongLiked.observe(viewLifecycleOwner) { isLiked ->
-//            val icon = if (isLiked) R.drawable.fav2 else R.drawable.fav
-//            binding.ibLikeSong.setImageResource(icon)
-//        }
     }
 
     private fun setupClickListeners() {
@@ -103,7 +99,6 @@ class NowPlaying : Fragment() {
         val isLiked:Boolean = metadata.getString("isLiked").toBoolean()
         val icon = if (isLiked) R.drawable.fav2 else R.drawable.fav
         binding.ibLikeSong.setImageResource(icon)
-//        binding.ibLikeSongMini.setImageResource(icon)
 
         binding.seekBar.max = if (duration > 0) duration.toInt() else 0
 
@@ -112,20 +107,11 @@ class NowPlaying : Fragment() {
             .placeholder(R.drawable.spotify_icon_foreground)
             .error(R.drawable.spotify_icon_foreground)
             .into(binding.ivAlbumArtMini)
-
-        // I assume your MotionLayout is animating 'ivAlbumArtMini' to a bigger size.
-        // If you have a second, separate ImageView for the full player (like 'ivAlbumArtFull'),
-        // you would add a Glide call for it here. If not, this is all you need for the art.
     }
-
-
-
-
 
     private fun updatePlaybackStateUI(state: PlaybackStateCompat?) {
         val isPlaying = state?.state == PlaybackStateCompat.STATE_PLAYING
         val iconRes = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
-
         binding.ibPlayPauseMini.setImageResource(iconRes)
         binding.ibPlayPauseFull.setImageResource(iconRes)
     }

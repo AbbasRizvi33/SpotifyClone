@@ -96,11 +96,6 @@ class Search : Fragment() {
         binding.searchrv.layoutManager= LinearLayoutManager(requireContext())
         binding.searchrv.adapter=searchAdapter
 
-//        sharedvm.songs.observe(viewLifecycleOwner) { allSongsList ->
-//            val currentQuery = binding.searchv.editText.text.toString()
-//            sharedvm.filterAllSongs(currentQuery)
-//        }  MIGHT BREAK, IDK, LETS TEST
-
        sharedvm.filteredSearchedSongs.observe(viewLifecycleOwner){
            item->
            allSongs=item

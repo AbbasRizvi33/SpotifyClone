@@ -43,7 +43,6 @@ class CategoryAdapter(
         holder.bind(getItem(position))
     }
 
-
     private class CategoryDiffUtilsCallback(): DiffUtil.ItemCallback<SongCategory>(){
         override fun areItemsTheSame(
             oldItem: SongCategory,

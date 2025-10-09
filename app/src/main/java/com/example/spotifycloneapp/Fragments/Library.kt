@@ -65,12 +65,6 @@ class Library : Fragment() {
     }
 
 
-
-//    override fun onStart() {
-//        super.onStart()
-////        sharedvm.showLikedSongs()
-//    }
-
     private fun handlePLayClick(song: DisplaySongData){
         val isCurrentlyPlaying = sharedvm.state.value?.state == PlaybackStateCompat.STATE_PLAYING
         val isThisThePlayingSong = sharedvm.metadata.value?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID) == song.mediaId
@@ -80,8 +74,8 @@ class Library : Fragment() {
         else if(!isCurrentlyPlaying && isThisThePlayingSong){
             sharedvm.resume()
         }
-        else {
-            sharedvm.playReqSong(song.mediaId, MusicService.LIKED_SONGS_ROOT_ID)
+        else {// change it
+            sharedvm.playReqSong(song.mediaId, MusicService.MEDIA_ROOT_ID)
         }
     }
     private fun handleLikeCLick(song: DisplaySongData){
@@ -218,12 +212,6 @@ class Library : Fragment() {
 //        }
 //    }
 
-//    override fun onPause() {
-//        super.onPause()
-//        if(binding.searchv.isShowing){
-//            binding.searchv.hide()
-//        }
-//    }
 
     override fun onDetach() {
         super.onDetach()

@@ -9,6 +9,7 @@
             name="test"
             type="com.example.spotifycloneapp.MainActivity" />
     </data>
+
     
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -55,6 +56,22 @@
             style="@style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface"
             />
 
+        <FrameLayout
+            android:id="@+id/loading_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="#80000000"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/loading_logo"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:src="@drawable/spotify_icon_foreground" />
+        </FrameLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
