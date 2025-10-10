@@ -113,6 +113,7 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:postgrest-kt") // For database
     implementation("io.github.jan-tennert.supabase:storage-kt")   // For file storage
     implementation("io.ktor:ktor-client-okhttp:2.3.12")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
 
 }

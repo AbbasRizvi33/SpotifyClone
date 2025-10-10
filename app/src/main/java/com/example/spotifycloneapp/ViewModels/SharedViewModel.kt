@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,13 +28,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.text.equals
 
+private const val TAG = "SpotifyCloneDebug"
 @HiltViewModel
 class SharedViewModel @Inject constructor(
 ) : ViewModel() {
-    private val _Events: Channel<RecieveEvents> = Channel<RecieveEvents>()
-    val Events get() = _Events.receiveAsFlow()
-    private val _LikedSongsEvents: MutableLiveData<RecieveEvents> = MutableLiveData<RecieveEvents>()
-    val LikedSongsEvents get() = _LikedSongsEvents
     private var mediaController: MediaControllerCompat? = null
     private val _metadata = MutableLiveData<MediaMetadataCompat?>()
     val metadata: LiveData<MediaMetadataCompat?> = _metadata
@@ -59,8 +57,11 @@ class SharedViewModel @Inject constructor(
         _isLoading.postValue(true)
     }
     fun seekTo(position: Long) {
-        mediaController?.transportControls?.seekTo(position)
+        if (mediaController != null) {
+            mediaController?.transportControls?.seekTo(position)
+        }
     }
+
     fun setController(controller: MediaControllerCompat) {
         mediaController = controller
     }
@@ -85,6 +86,8 @@ class SharedViewModel @Inject constructor(
 
 
     fun playReqSong(mediaId: String, parentMediaId: String) {
+        Log.d(TAG, "MainActivity → Requesting playback: playFromMediaId(mediaId=$mediaId)")
+
         val extras = Bundle().apply {
             putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, parentMediaId)
         }

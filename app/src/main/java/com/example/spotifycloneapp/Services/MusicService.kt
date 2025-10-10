@@ -13,6 +13,7 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import androidx.media.MediaBrowserServiceCompat
@@ -36,6 +37,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import androidx.core.net.toUri
 
+private const val TAG = "SpotifyCloneDebug"
+
 @AndroidEntryPoint
 class MusicService : MediaBrowserServiceCompat(), Player.Listener {
     @Inject lateinit var repo: Repository
@@ -58,8 +61,10 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
 
     override fun onCreate() {
         super.onCreate()
+        val prefs = getSharedPreferences("player_state", MODE_PRIVATE)
+        currentIndex = prefs.getInt("last_index", 0)
         exoPlayer.addListener(this)
-
+        Log.d(TAG, "MusicService: onCreate() called")
         mediaSession = MediaSessionCompat(this, "MusicService").apply {
             setCallback(mediaSessionCallback)
             isActive = true
@@ -175,12 +180,48 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
         }
 
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
+            Log.d(TAG, "MusicService: onPlayFromMediaId called — mediaId=$mediaId, extras=$extras")
             super.onPlayFromMediaId(mediaId, extras)
             if (mediaId == null) return
 
             val parentMediaId = extras?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
             val clickedSongExistsInCurrentPlaylist = playlist.any { it.mediaId == mediaId }
             val currentPlaylistParentId = mediaSession.controller?.metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST)
+
+            if (playlist.isEmpty()) {
+                serviceScope.launch(Dispatchers.IO) {
+                    val allSongs = repo.getAllSongs().first()
+                    if (allSongs.isNotEmpty()) {
+                        playlist = allSongs.map { song ->
+                            val metadataExtras = Bundle().apply {
+                                putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, parentMediaId)
+                                putString("isLiked", song.isLiked.toString())
+                            }
+
+                            val exoPlayerMediaMetadata = com.google.android.exoplayer2.MediaMetadata.Builder()
+                                .setTitle(song.title)
+                                .setArtist(song.artist)
+                                .setArtworkUri(song.coverPath?.let { Uri.parse(it) })
+                                .setExtras(metadataExtras)
+                                .setAlbumArtist(parentMediaId)
+                                .build()
+
+                            MediaItem.Builder()
+                                .setUri(song.filePath)
+                                .setMediaId(song.id.toString())
+                                .setMediaMetadata(exoPlayerMediaMetadata)
+                                .build()
+                        }
+
+                        currentIndex = allSongs.indexOfFirst { it.id.toString() == mediaId }
+
+                        withContext(Dispatchers.Main) {
+                            playCurrentTrack()
+                        }
+                    }
+                }
+                return
+            }
 
             if (clickedSongExistsInCurrentPlaylist && parentMediaId == currentPlaylistParentId) {
                 serviceScope.launch(Dispatchers.Main) {
@@ -296,10 +337,13 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
 
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(TAG, "MusicService: onStartCommand() called with intent=$intent, flags=$flags, startId=$startId")
+        Log.d(TAG, "MusicService: returning START_STICKY")
         return START_STICKY
     }
 
     private fun playCurrentTrack() {
+        Log.d(TAG, "MusicService: playCurrentTrack() called — currentIndex=$currentIndex")
         if (playlist.isEmpty() || currentIndex < 0 || currentIndex >= playlist.size) return
         exoPlayer.setMediaItems(playlist, currentIndex, 0L)
         exoPlayer.prepare()
@@ -387,9 +431,21 @@ class MusicService : MediaBrowserServiceCompat(), Player.Listener {
         }
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        val prefs = getSharedPreferences("player_state", MODE_PRIVATE)
+        prefs.edit()
+            .putInt("last_index", currentIndex)
+            .apply()
+
+        if (!exoPlayer.isPlaying) stopSelf()
+        Log.d(TAG, "MusicService: onTaskRemoved() called (app removed from recents)")
+    }
+
+
+
     override fun onDestroy() {
-        exoPlayer.removeListener(this)
-        exoPlayer.release()
+        Log.d(TAG, "MusicService: onDestroy() called")
         mediaSession.release()
         super.onDestroy()
     }

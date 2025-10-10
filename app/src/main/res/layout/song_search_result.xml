@@ -17,20 +17,6 @@
         android:layout_marginVertical="8dp"
         >
 
-<!--        <androidx.constraintlayout.widget.Guideline-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:orientation="vertical"-->
-<!--            app:layout_constraintGuide_percent="0.05"-->
-<!--            android:id="@+id/v1"/>-->
-
-<!--        <androidx.constraintlayout.widget.Guideline-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:orientation="vertical"-->
-<!--            app:layout_constraintGuide_percent="0.95"-->
-<!--            android:id="@+id/v2"/>-->
-
 
 
     <com.google.android.material.card.MaterialCardView
