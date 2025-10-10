@@ -2,29 +2,20 @@
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Transition 1: COLLAPSED -> EXPANDED (Swipe Up) -->
     <Transition
-        app:constraintSetEnd="@+id/expanded"
         app:constraintSetStart="@id/collapsed"
+        app:constraintSetEnd="@id/expanded"
         app:duration="300">
 
-
-    </Transition>
-
-    <!-- NEW Transition 2: EXPANDED -> COLLAPSED (Swipe Down) -->
-    <Transition
-        app:constraintSetEnd="@id/collapsed"
-        app:constraintSetStart="@+id/expanded"
-        app:duration="300">
-
-        <!-- Listens for a swipe DOWN on the album art to minimize/collapse the player -->
         <OnSwipe
-            app:dragDirection="dragDown"
             app:touchAnchorId="@id/mini_player_touch_anchor"
-            app:touchAnchorSide="top" />
+            app:touchAnchorSide="top"
+            app:dragDirection="dragUp"
+            app:moveWhenScrollAtTop="true" />
+
     </Transition>
 
-    <!-- ConstraintSet for the COLLAPSED (mini-player) state -->
+
     <ConstraintSet android:id="@+id/collapsed">
         <!-- Make the full-screen controls invisible -->
         <Constraint android:id="@+id/seekBar" android:alpha="0.0" />
@@ -36,8 +27,6 @@
         <Constraint android:id="@+id/tv_track_artist_full" android:alpha="0.0" />
         <Constraint android:id="@+id/ib_like_song" android:alpha="0.0" />
 
-
-        <!-- Constraints for the root layout in the collapsed state (64dp height at the bottom) -->
         <Constraint
             android:id="@+id/root_layout"
             android:layout_height="64dp"
@@ -46,9 +35,7 @@
             app:layout_constraintStart_toStartOf="parent" />
     </ConstraintSet>
 
-    <!-- ConstraintSet for the EXPANDED (full-screen) state -->
     <ConstraintSet android:id="@+id/expanded">
-        <!-- Constraints for the root layout in the expanded state (full height: 0dp constrained to top/bottom) -->
         <Constraint
             android:id="@+id/root_layout"
             android:layout_width="0dp"
@@ -58,7 +45,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Make mini-player text and button invisible -->
         <Constraint android:id="@+id/tv_track_title_mini" android:alpha="0.0" />
         <Constraint android:id="@+id/tv_track_artist_mini" android:alpha="0.0" />
         <Constraint android:id="@+id/ib_play_pause_mini" android:alpha="0.0" />
@@ -73,7 +59,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/ib_down_arrow" />
 
-        <!-- Track Title (Full) -->
         <Constraint
             android:id="@+id/tv_track_title_full"
             android:layout_width="0dp"
@@ -86,7 +71,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Track Artist (Full) -->
         <Constraint
             android:id="@+id/tv_track_artist_full"
             android:layout_width="0dp"
@@ -97,7 +81,6 @@
             app:layout_constraintEnd_toEndOf="@+id/tv_track_title_full"
             app:layout_constraintStart_toStartOf="@+id/tv_track_title_full" />
 
-        <!-- Album Art (Full) -->
         <Constraint
             android:id="@id/iv_album_art_mini"
             android:layout_width="0dp"
@@ -112,7 +95,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ib_down_arrow" />
 
-        <!-- Down Arrow Button -->
         <Constraint
             android:id="@+id/ib_down_arrow"
             android:layout_width="wrap_content"
@@ -123,7 +105,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Seek Bar -->
         <Constraint
             android:id="@+id/seekBar"
             android:layout_width="0dp"
@@ -136,7 +117,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Play/Pause Control (Full) -->
         <Constraint
             android:id="@+id/ib_play_pause_full"
             android:layout_width="72dp"
@@ -147,7 +127,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Skip Next Control (Full) -->
         <Constraint
             android:id="@+id/ib_skip_next_full"
             android:layout_width="64dp"
@@ -158,7 +137,6 @@
             app:layout_constraintStart_toEndOf="@id/ib_play_pause_full"
             app:layout_constraintTop_toTopOf="@id/ib_play_pause_full" />
 
-        <!-- Skip Previous Control (Full) -->
         <Constraint
             android:id="@+id/ib_skip_previous_full"
             android:layout_width="64dp"

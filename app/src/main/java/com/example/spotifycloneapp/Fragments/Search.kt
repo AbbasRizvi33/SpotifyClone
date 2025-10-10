@@ -1,6 +1,7 @@
 package com.example.spotifycloneapp.Fragments
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -95,6 +96,20 @@ class Search : Fragment() {
 
         binding.searchrv.layoutManager= LinearLayoutManager(requireContext())
         binding.searchrv.adapter=searchAdapter
+        val editText = binding.searchv.editText
+        editText.setTextColor(Color.WHITE)
+        editText.setHintTextColor(Color.LTGRAY)
+
+        val allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+
+        val alphabetFilter = android.text.InputFilter { source, start, end, dest, dstart, dend ->
+            source.filter { char ->
+                allowedChars.contains(char)
+            }
+        }
+        val lengthFilter = android.text.InputFilter.LengthFilter(20)
+
+        binding.searchv.editText.filters = arrayOf(lengthFilter, alphabetFilter)
 
        sharedvm.filteredSearchedSongs.observe(viewLifecycleOwner){
            item->
@@ -131,6 +146,28 @@ class Search : Fragment() {
             val currentSongId = sharedvm.metadata.value?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
             searchAdapter.updatePlaybackState(isPlaying, currentSongId)
         }
+
+        val onBackPressedCallback = object : androidx.activity.OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                if (binding.searchv.isShowing) {
+                    binding.searchv.hide()
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+
+        binding.searchv.addTransitionListener { searchView, previousState, newState ->
+            if (newState == com.google.android.material.search.SearchView.TransitionState.SHOWN) {
+                onBackPressedCallback.isEnabled = true
+                activityCallback?.setBottomBarVisibility(false)
+                binding.searchrv.visibility = View.VISIBLE
+            } else if (newState == com.google.android.material.search.SearchView.TransitionState.HIDING) {
+                onBackPressedCallback.isEnabled = false
+                activityCallback?.setBottomBarVisibility(true)
+                binding.searchrv.visibility = View.GONE
+            }
+        }
+
 
         sharedvm.state.observe(viewLifecycleOwner) {
             updateAdapterState()

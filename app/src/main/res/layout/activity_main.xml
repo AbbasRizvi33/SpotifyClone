@@ -70,7 +70,8 @@
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_gravity="center"
-                android:src="@drawable/spotify_icon_foreground" />
+                android:src="@drawable/spotify_icon_foreground"
+                app:tint="@color/white" />
         </FrameLayout>
 
 

@@ -1,15 +1,15 @@
 package com.example.spotifycloneapp.Fragments
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.spotifycloneapp.Adapters.LikedSongsAdapter
@@ -19,7 +19,6 @@ import com.example.spotifycloneapp.Services.MusicService
 import com.example.spotifycloneapp.ViewModels.SharedViewModel
 import com.example.spotifycloneapp.bindingclassess.AdapterClassData
 import com.example.spotifycloneapp.bindingclassess.DisplaySongData
-import com.example.spotifycloneapp.bindingclassess.SongData
 import com.example.spotifycloneapp.databinding.FragmentLibraryBinding
 
 
@@ -74,7 +73,7 @@ class Library : Fragment() {
         else if(!isCurrentlyPlaying && isThisThePlayingSong){
             sharedvm.resume()
         }
-        else {// change it
+        else {
             sharedvm.playReqSong(song.mediaId, MusicService.MEDIA_ROOT_ID)
         }
     }
@@ -87,6 +86,43 @@ class Library : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val editText = binding.searchv.editText
+        editText.setTextColor(Color.WHITE)
+        editText.setHintTextColor(Color.LTGRAY)
+
+        val onBackPressedCallback = object : androidx.activity.OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                if (binding.searchv.isShowing) {
+                    binding.searchv.hide()
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+
+        binding.searchv.addTransitionListener { searchView, previousState, newState ->
+            if (newState == com.google.android.material.search.SearchView.TransitionState.SHOWN) {
+                onBackPressedCallback.isEnabled = true
+                activityCallback?.setBottomBarVisibility(false)
+                binding.searchrv.visibility = View.VISIBLE
+            } else if (newState == com.google.android.material.search.SearchView.TransitionState.HIDING) {
+                onBackPressedCallback.isEnabled = false
+                activityCallback?.setBottomBarVisibility(true)
+                binding.searchrv.visibility = View.GONE
+            }
+        }
+
+
+
+        val allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+
+        val alphabetFilter = android.text.InputFilter { source, start, end, dest, dstart, dend ->
+            source.filter { char ->
+                allowedChars.contains(char)
+            }
+        }
+        val lengthFilter = android.text.InputFilter.LengthFilter(20)
+
+        binding.searchv.editText.filters = arrayOf(lengthFilter, alphabetFilter)
 
         sharedvm.likedSongs.observe(viewLifecycleOwner) { songsList ->
             likedSongs=songsList
@@ -129,27 +165,6 @@ class Library : Fragment() {
             searchAdapter.submitList(dataToBeSent)
         }
 
-        sharedvm.LikedSongsEvents.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is RecieveEvents.Success -> {
-                    // binding.loadingIndicator.visibility = View.GONE
-//                    adapter.submitList(event.songs)
-                }
-                is RecieveEvents.Empty -> {
-                    // binding.loadingIndicator.visibility = View.GONE
-//                    adapter.submitList(emptyList())
-                }
-                is RecieveEvents.Error -> {
-                    // binding.loadingIndicator.visibility = View.GONE
-//                    adapter.submitList(emptyList())
-                }
-                is RecieveEvents.Loading -> {
-                    // binding.loadingIndicator.visibility = View.VISIBLE
-                }
-                else -> {}
-            }
-        }
-//        observeEvents()
 
         val updateAdapterState = {
             val isPlaying = sharedvm.state.value?.state == PlaybackStateCompat.STATE_PLAYING
@@ -193,24 +208,6 @@ class Library : Fragment() {
 
 
 
-
-//    private fun observeEvents(){
-//        lifecycleScope.launch {
-//            sharedvm.LikedSongsEvents.collect { events ->
-//                when(events){
-//                    is RecieveEvents.Success -> {
-//                        adapter.submitList(events.songs)
-//                    }
-//                    is RecieveEvents.Error -> {
-//                        adapter.submitList(emptyList())
-//                    }
-//                    else -> {
-//                        //loading
-//                    }
-//                }
-//            }
-//        }
-//    }
 
 
     override fun onDetach() {

@@ -16,11 +16,22 @@
         <item name="cornerSize">10dp</item>
     </style>
 
-    <style name="SearchViewStyle" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">12dp</item>
+    <style name="Searchbar" parent="">
+        <item name="editTextColor">@color/white</item>
+        <item name="backgroundTint">@color/background2</item>
+    </style>
+
+    <style name="CustomSearchEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
         <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/spotify_chip_bg</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.Material3.SearchView">
+        <item name="editTextStyle">@style/CustomSearchEditText</item>
+        <item name="editTextColor">@color/white</item>
         <item name="backgroundTint">@color/background</item>
+        <item name="android:hint">@string/find_in_liked_songs</item>
+        <item name="android:textColorHint">@color/spotify_chip_bg</item>
     </style>
 
 

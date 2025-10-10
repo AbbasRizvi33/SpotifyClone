@@ -14,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.spotifycloneapp.Adapters.CategoryAdapter
 import com.example.spotifycloneapp.Services.MusicService
-import com.example.spotifycloneapp.ViewModels.FragmentHomeViewModel
 import com.example.spotifycloneapp.ViewModels.SharedViewModel
 import com.example.spotifycloneapp.bindingclassess.SongCategory
 import com.example.spotifycloneapp.bindingclassess.SongData
@@ -23,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class Home : Fragment() {
-    private val viewModel: FragmentHomeViewModel by viewModels()
     private val sharedvm: SharedViewModel by activityViewModels()
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
